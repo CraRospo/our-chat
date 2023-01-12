@@ -4,14 +4,35 @@
 a simple chat PWA. front-end.
 
 #### 软件架构
-软件架构说明
+base on Vue3 + Vite
 
 
 #### 安装教程
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+1.  克隆地址
+
+```
+git clone git@gitee.com:rostrop/our-chat.git
+```
+
+2.  使用包管理工具安装依赖
+
+```
+yarn
+```
+or
+```
+npm install
+```
+
+3.  启动演示
+```
+yarn dev
+```
+or
+```
+npm run dev
+```
 
 #### 使用说明
 
