@@ -18,19 +18,19 @@ git clone git@gitee.com:rostrop/our-chat.git
 2.  使用包管理工具安装依赖
 
 ```
+# yarn
 yarn
-```
-or
-```
+
+# npm
 npm install
 ```
 
 3.  启动演示
 ```
+# yarn
 yarn dev
-```
-or
-```
+
+# npm
 npm run dev
 ```
 
