@@ -1,17 +1,29 @@
 <script setup>
-defineProps({
+const props = defineProps({
   msg: String,
   name: String,
   type: Number
 })
+
+const isSelfMsg = () => props.type === 1
+const isSysMsg = () => props.type === 0
 </script>
 
 <template>
-  <div class="msg-container" :class="{ 'self-msg': type }">
-    <div class="contact-name">
+  <div
+    class="msg-container"
+    :class="{ 'self-msg': isSelfMsg() }"
+  >
+    <div
+      v-if="type"
+      class="contact-name"
+    >
       {{ name }}
     </div>
-    <div class="msg-box">
+    <div
+      class="msg-box"
+      :class="{ 'system-msg': isSysMsg() }"
+    >
       {{ msg }}
     </div>
   </div>
@@ -39,5 +51,13 @@ defineProps({
   font-size: 16px;
   color: #333;
   text-align: left;
+}
+.system-msg {
+  padding: 0 4px;
+  margin: 0 auto;
+  font-size: 12px;
+  color: #fff;
+  border-radius: 2px;
+  background: #ccc;
 }
 </style>

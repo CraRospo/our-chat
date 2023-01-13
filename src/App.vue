@@ -1,38 +1,34 @@
 <script setup>
 import ChatMsg from './components/ChatMsg.vue'
-import { createMsg } from './utils/utils'
-import { ref, reactive, nextTick } from 'vue'
+import { ref, reactive, nextTick, inject } from 'vue'
 
-let count = ref(0)
 const list = reactive([])
 const wrapper = ref('wrapper')
 const screen = ref('screen')
+const Ws = inject('ws')
 
-// 模拟chat
-const chat = function() {
+Ws.onmessage = function (e) {
+  const message = JSON.parse(e.data)
+  list.push(message.data)
 
-  // 暂时模拟10条
-  if (count.value >= 10) return 
-  setTimeout(() => {
-    // 模拟消息
-    list.push(createMsg())
-    count.value++
-
-    // 滑动消息内容
-    nextTick(() => {
-      let height = wrapper.value.offsetHeight
-      screen.value.scrollTo({
-        top: height,
-        behavior: "smooth"
-      })
+  nextTick(() => {
+    let height = wrapper.value.offsetHeight
+    screen.value.scrollTo({
+      top: height,
+      behavior: "smooth"
     })
-    
-    chat()
-  }, 800)
+  })
 }
 
-chat()
-
+// 发送消息
+/**
+ * message格式
+ * { data: { id, type, name, msg } }
+ */
+const content = ref('')
+const onMsgSend = () => {
+  Ws.send(content.value)
+}
 
 </script>
 
@@ -54,11 +50,15 @@ chat()
     <input
       class="msg-input"
       type="text"
+      v-model="content"
     >
-    <button class="send-btn">发送</button>
+    <button
+      class="send-btn"
+      @click="onMsgSend"
+    >
+      发送
+    </button>
   </div>
-  
-
 </template>
 
 <style scoped>
