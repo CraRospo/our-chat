@@ -1,5 +1,6 @@
 <script setup>
 import ChatMsg from './components/ChatMsg.vue'
+import CustomToast from './components/CustomToast.vue'
 import { ref, reactive, nextTick, inject } from 'vue'
 
 const list = reactive([])
@@ -27,41 +28,67 @@ Ws.onmessage = function (e) {
  */
 const content = ref('')
 const onMsgSend = () => {
+  if (!content.value) {
+    description.value = '不能发送空消息'
+    visible.value = true
+    return false
+  }
+
   Ws.send(content.value)
+  content.value = ''
 }
+
+// toast
+const visible = ref(false)
+const description = ref('')
 
 </script>
 
 <template>
-  <div
-    ref="screen"
-    class="msg-screen"
-  >
-    <div ref="wrapper">
-      <ChatMsg
-        v-for="context in list"
-        :msg="context.msg"
-        :name="context.name"
-        :type="context.type"
-      />
+  <div class="container">
+    <div
+      ref="screen"
+      class="msg-screen"
+    >
+      <div ref="wrapper">
+        <ChatMsg
+          v-for="context in list"
+          :msg="context.msg"
+          :name="context.name"
+          :type="context.type"
+        />
+      </div>
     </div>
-  </div>
-  <div class="operation">
-    <input
-      class="msg-input"
-      type="text"
-      v-model="content"
+    <div class="operation">
+      <input
+        class="msg-input"
+        type="text"
+        v-model="content"
+        @keyup.enter="onMsgSend"
+      >
+      <button
+        class="send-btn"
+        @click="onMsgSend"
+      >
+        发送
+      </button>
+    </div>
+
+    <CustomToast
+      :visible="visible"
+      @close="visible = false"
     >
-    <button
-      class="send-btn"
-      @click="onMsgSend"
-    >
-      发送
-    </button>
+      <template #main>{{ description }}</template>
+    </CustomToast>
   </div>
+
 </template>
 
 <style scoped>
+.container {
+  width: 500px;
+  position: relative;
+}
 .msg-screen {
   box-sizing: border-box;
   width: 500px;
