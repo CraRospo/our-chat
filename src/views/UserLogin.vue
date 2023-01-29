@@ -1,5 +1,7 @@
 <script setup>
 import { reactive } from 'vue';
+import { useRouter } from 'vue-router'
+const router = useRouter()
 
 const userInfo = reactive({
   username: '',
@@ -7,31 +9,27 @@ const userInfo = reactive({
 })
 
 const onLogin = async () => {
-  const res = await fetch('/api/login')
-  const response = res.json()
-  if (response.code === 0) {
-    this.$router.push({ name: 'ChatMain' })
-  }
-}
-
-const onRegister = async () => {
-  console.log(JSON.stringify(userInfo))
-  const res = await fetch(
-    '/api/register',
+  const res = await fetch('/api/login',
     {
       method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify(userInfo)
     }
   )
-  console.log(res)
-  const response = res.json()
+  const response = await res.json()
   console.log(response)
+  if (response.code === 0) {
+    router.push({ name: 'ChatMain' })
+  }
 }
+
 </script>
 
 <template>
   <div class="login-form">
-    <h1>Our-Chat</h1>
+    <h1>Our Chat</h1>
     <div class="form-item">
       <label
         class="form-item-name"
@@ -65,14 +63,14 @@ const onRegister = async () => {
     <div class="form-item">
       <label class="form-item-name"></label>
       <button
-        class="login-btn"
+        class="login-btn "
         @click="onLogin"
       >
-        login
+        登录
       </button>
     </div>
 
-    <p class="register-tips">if you don't have account,please <button class="register-btn" @click="onRegister">register</button> first.</p>
+    <p class="register-tips">Please agreen our <router-link :to="{ 'name': 'PrivateProtocal' }">protocal</router-link> before you signin. </p>
   </div>
 </template>
 
@@ -83,26 +81,34 @@ const onRegister = async () => {
   width: 100%;
 }
 .form-item {
-  display: flex;
-  padding: 10px 20%;
+  padding: 10px 20px;
 }
 .form-item-name {
-  flex: none;
-  width: 40%;
-  /* text-align: right; */
+  display: block;
+  text-align: left;
+  margin-bottom: 8px;
 }
 .form-item-input {
-  flex: auto;
+  box-sizing: border-box;
   width: 100%;
+  padding: 0 6px;
+  height: 30px;
+  border: 1px solid #dcdfe6;
+  border-radius: 4px;
+}
+.form-item-input:focus {
+  border-color: #409eff;
 }
 .login-btn {
+  box-sizing: border-box;
+  width: 100%;
+  height: 32px;
   padding: 4px 10px;
-  border: 1px solid #666;
+  background-color: #409eff;
+  border-radius: 4px;
+  color: #fff;
 }
 .register-tips {
   text-align: center;
-}
-.register-btn {
-  text-decoration: underline;
 }
 </style>

@@ -50,7 +50,10 @@ const description = ref('')
       ref="screen"
       class="msg-screen"
     >
-      <div ref="wrapper">
+      <div
+        class="msg-wrapper"
+        ref="wrapper"
+      >
         <ChatMsg
           v-for="context in list"
           :msg="context.msg"
@@ -92,17 +95,18 @@ const description = ref('')
   box-sizing: border-box;
   width: 100%;
   height: calc(100vh - 45px);
-  border: 1px solid #ccc;
   overflow: auto;
 }
 .operation {
+  position: fixed;
+  bottom: 0;
+  left: 0;
   box-sizing: border-box;
   width: 100%;
   padding: 6px 10px;
   display: flex;
   align-items: center;
-  border: 1px solid #ccc;
-  border-top: 0;
+  border-top: 1px solid #ccc;
 }
 .operation .msg-input {
   flex: auto;
