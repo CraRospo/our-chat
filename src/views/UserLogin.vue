@@ -29,7 +29,14 @@ const onLogin = async () => {
 
 <template>
   <div class="login-form">
-    <h1>Our Chat</h1>
+    <h1 class="login-title">
+      <img
+        class="logo"
+        src="/logo.svg"
+        alt="logo"
+      >  
+      Our Chat
+    </h1>
     <div class="form-item">
       <label
         class="form-item-name"
@@ -75,6 +82,17 @@ const onLogin = async () => {
 </template>
 
 <style scoped>
+.login-title {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.login-title .logo {
+  flex: none;
+  width: 32px;
+  margin-right: 12px;
+}
 .login-form {
   position: relative;
   margin: 30% auto;
