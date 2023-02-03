@@ -1,7 +1,8 @@
 <script setup>
-import { reactive, inject } from 'vue';
+import { reactive } from 'vue';
 import { useRouter } from 'vue-router'
-let Ws = inject('ws')
+import { digestMessage } from '@/utils/util'
+
 const router = useRouter()
 
 const userInfo = reactive({
@@ -9,30 +10,82 @@ const userInfo = reactive({
   password: ''
 })
 
+const formItemState = reactive({
+  username: {
+    inValid: false,
+    message: ''
+  },
+  password: {
+    inValid: false,
+    message: ''
+  }
+})
+
+const checkForm = () => {
+  if (!userInfo.username) {
+    Object.assign(formItemState.username, {
+      inValid: true,
+      message: '用户名不能为空'
+    })
+  } else {
+    if (!/.{5,16}/.test(userInfo.username)) {
+      Object.assign(formItemState.username, {
+        inValid: true,
+        message: '用户名应为5-16位'
+      })
+    } else {
+      Object.assign(formItemState.username, {
+        inValid: false,
+        message: ''
+      })
+    }
+  }
+  if (!userInfo.password) {
+    Object.assign(formItemState.password, {
+      inValid: true,
+      message: '密码不能为空'
+    })
+  } else {
+    if (!/.{5,16}/.test(userInfo.password)) {
+      Object.assign(formItemState.password, {
+        inValid: true,
+        message: '密码应为6-16位'
+      })
+    } else {
+      Object.assign(formItemState.password, {
+        inValid: false,
+        message: ''
+      })
+    }
+  }
+
+  if(!formItemState.password.inValid && !formItemState.username.inValid) return true
+}
+
 const onLogin = async () => {
+  if(!checkForm()) return false
+  const digestHex = await digestMessage(userInfo.password)
+  const info = {
+    username: userInfo.username,
+    password: digestHex
+  }
+
   const res = await fetch('/api/login',
     {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(userInfo)
+      body: JSON.stringify(info)
     }
   )
 
-  console.log(res)
   const response = await res.json()
   localStorage.setItem('oc_name', userInfo.username)
 
   if (response.code === 0) {
     router.push({ name: 'ChatMain' })
   }
-  // console.log(Ws)
-  // const first = { name: userInfo.username }
-  // Ws.send(JSON.stringify(first))
-  // if (response.code === 0) {
-  //   router.push({ name: 'FriendsList' })
-  // }
 }
 
 </script>
@@ -56,10 +109,13 @@ const onLogin = async () => {
       </label>
       <input
         class="form-item-input"
+        :class="{ 'invalid-form-item': formItemState.username.inValid }"
         type="text"
         name="username"
         v-model="userInfo.username"
+        @input="checkForm"
       >
+      <p v-if="formItemState.username.inValid" class="invalid-text">{{ formItemState.username.message }}</p>
     </div>
 
     <div class="form-item">
@@ -71,10 +127,13 @@ const onLogin = async () => {
       </label>
       <input
         class="form-item-input"
+        :class="{ 'invalid-form-item': formItemState.password.inValid }"
         type="password"
         name="password"
         v-model="userInfo.password"
+        @input="checkForm"
       >
+      <p v-if="formItemState.password.inValid" class="invalid-text">{{ formItemState.password.message }}</p>
     </div>
 
     <div class="form-item">
@@ -138,5 +197,17 @@ const onLogin = async () => {
 }
 .register-tips {
   text-align: center;
+}
+.invalid-form-item {
+  border-color: var(--warning-color);
+}
+.invalid-form-item:focus {
+  border-color: var(--warning-color);
+}
+.invalid-text {
+  text-align: left;
+  margin: 4px 0 0;
+  font-size: 14px;
+  color: var(--warning-color);
 }
 </style>
