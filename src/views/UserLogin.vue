@@ -1,6 +1,7 @@
 <script setup>
-import { reactive } from 'vue';
+import { reactive, inject } from 'vue';
 import { useRouter } from 'vue-router'
+let Ws = inject('ws')
 const router = useRouter()
 
 const userInfo = reactive({
@@ -18,11 +19,20 @@ const onLogin = async () => {
       body: JSON.stringify(userInfo)
     }
   )
+
+  console.log(res)
   const response = await res.json()
-  console.log(response)
+  localStorage.setItem('oc_name', userInfo.username)
+
   if (response.code === 0) {
     router.push({ name: 'ChatMain' })
   }
+  // console.log(Ws)
+  // const first = { name: userInfo.username }
+  // Ws.send(JSON.stringify(first))
+  // if (response.code === 0) {
+  //   router.push({ name: 'FriendsList' })
+  // }
 }
 
 </script>
@@ -77,7 +87,7 @@ const onLogin = async () => {
       </button>
     </div>
 
-    <p class="register-tips">Please agreen our <router-link :to="{ 'name': 'PrivateProtocal' }">protocal</router-link> before you signin. </p>
+    <p class="register-tips">Please agree our <router-link :to="{ 'name': 'PrivateProtocal' }">protocal</router-link> before you signin. </p>
   </div>
 </template>
 

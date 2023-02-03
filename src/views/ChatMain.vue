@@ -8,7 +8,14 @@ const wrapper = ref('wrapper')
 const screen = ref('screen')
 const Ws = inject('ws')
 
-Ws.onmessage = function (e) {
+if (!Ws.instance) {
+  Ws.instance = new WebSocket('ws://127.0.0.1:8010')
+}
+Ws.instance.onopen = () => {
+  console.log('open')
+}
+
+Ws.instance.onmessage = function (e) {
   const message = JSON.parse(e.data)
   list.push(message.data)
 
@@ -19,6 +26,10 @@ Ws.onmessage = function (e) {
       behavior: "smooth"
     })
   })
+}
+
+Ws.instance.onerror = (e) => {
+  console.log(e)
 }
 
 // 发送消息
@@ -34,7 +45,7 @@ const onMsgSend = () => {
     return false
   }
 
-  Ws.send(content.value)
+  Ws.instance.send(content.value)
   content.value = ''
 }
 
